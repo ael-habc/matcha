@@ -1,116 +1,98 @@
-const express = require('express')
+const express = require('express');
+const bodyparser = require('body-parser');
+const cookieparser = require('cookie-parser');
+// const fileupload = require('express-fileupload');
+const http = require('http');
 const app = express();
-const jwt = require('jsonwebtoken');
-let passwordHash = require('password-hash');
-const crypto = require('crypto');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const db = require('./dataBase.js');
-//const verifyToken = require('./functions/verifyToken.js')
-const verifyUser = require('./functions/verifyUser.js')
+require('dotenv').config();
+var cors = require('cors')
 
-//app.use(cors());
-//app.use(express.json());
-//app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors());
+// app.use(fileupload());
+app.use(cookieparser());
+app.use(express.static(__dirname + '/public'));
 
-// const registreError = {
-//     userNameErr: '',
-//     firstNameErr: '',
-//     lastNameErr: '',
-//     emailErr: '',
-//     passwordErr: '',
-//     confirmPassErr: '',
-// }
-// app.post('/api/insert', (req, res) => {
-//     const password = req.body.password
-//     const userName = req.body.userName
-//     const firstName = req.body.firstName
-//     const lastName = req.body.lastName
-//     const email = req.body.email
-//     const confirmPass = req.body.confirmPass
+app.use(bodyparser.json({limit: '10mb', extended: true}));
 
-//     const token = crypto.randomBytes(64).toString('hex');
-//     const hashPass = passwordHash.generate(password);
+app.use(bodyparser.urlencoded({limit: '10mb', extended: true}));
 
-//     /*---------------------------- emailErr ----------------------------*/
-//     if (email === "")
-//         registreError.emailErr = "email is empty"
-//     else
-//         if (verifyUser.checkUserByEmail(email)) {
-//             registreError.emailErr = "email already used";
-//         }
-//     // insert
-//     const sqlInsert = "INSERT INTO `user`(`firstName`, `lastName`, `userName`, `email`, `password`,`Token`) VALUES (?, ? , ? , ?, ?, ?)"
-//     if (registreError.emailErr === "" && registreError.userNameErr === "" && registreError.firstNameErr === "" && registreError.lastNameErr === "" && registreError.passwordErr === "" && registreError.confirmPassErr === "") {
-//         db.query(sqlInsert, [firstName, lastName, userName, email, hashPass, token], (err, result) => {
-//             console.log(err);
-//         });
-//     }
-//     else {
-//         console.log(registreError.emailErr);
-//     }
-// });
+app.use('/users', require('./router/users'));
 
+app.use('/infos', require('./router/uinfos'));
 
+app.use('/confirm', require('./router/confirm'));
 
+app.use('/tags', require('./router/tags'));
 
-app.get('/api', (req, res) => {
-    res.json({
-        message: 'Welcome to the API'
-    });
+app.use('/images', require('./router/images'));
+
+app.use('/posts', require('./router/posts'));
+
+app.use('/follow', require('./router/follow'));
+
+app.use('/auth', require('./router/auth'));
+
+app.use('/notifications', require('./router/notifications'));
+
+app.use('/inbox', require('./router/inbox'));
+
+app.use('/report', require('./router/report'));
+
+app.use('/blocks', require('./router/blocks'));
+
+app.use('/history', require('./router/history'));
+
+app.use('/rating', require('./router/rating'));
+
+app.use('/position', require('./router/position'));
+
+app.all("/*", (req, res) => {
+    res.send("Intercepting requests ..\n");
+})
+
+const Server = http.createServer(app);
+
+const io = require('socket.io');
+const { updatentfs } = require('./model/notifications');
+
+const socketio = io(Server,  {
+    cors: {
+        origin : `http://${process.env.FRONT_HOST}:${process.env.FRONT_PORT}`
+    }
 });
 
-app.post('/api/posts', verifyToken, (req, res) => {
-    jwt.verify(req.token, 'secretkey', (err, authData) => {
-        if (err) {
-            res.sendStatus(403);
-        } else {
-            res.json({
-                message: 'Post created...',
-                authData
+socketio.on('connection', (socket) => {
+
+    socket.on('Authorization', async (auth) => {
+        if (auth != undefined || auth != null) {
+            require('jsonwebtoken').verify(auth, process.env.TOKEN_SECRET, async (err, data) => {
+                if (!err) {
+                    let result = await
+require('./model/users').getUsersWhere('(`user_id` = ? AND `login` = ? AND `first_name` = ? AND `last_name` = ? AND `email` = ?)', '`user_id`',
+                    [data.user_id, data.login, data.first_name, data.last_name, data.email]);
+                    if (result.data.length) {
+                        socket.user_id = data.user_id;
+                        await require('./model/status').setstatus(1, data.user_id);
+                    }
+                }
             });
         }
     });
-});
 
-app.post('/api/login', (req, res) => {
-    // Mock user
-    const user = {
-        id: 1,
-        username: 'brad',
-        email: 'brad@gmail.com'
-    }
-
-    jwt.sign({ user }, 'secretkey' , (err, token) => {
-        res.json({
-            token
-        });
+    socket.on('upntfs', (msg) => {
+        socket.broadcast.emit('upntfs', '');
+        socket.broadcast.emit('upAll', '');
     });
-});
 
-// FORMAT OF TOKEN
-// Authorization: Bearer <access_token>
+    socket.on('msg', (msg) => {
+        socket.broadcast.emit('updateMsg', '');
+    })
 
-// Verify Token
-function verifyToken(req, res, next) {
-    // Get auth header value
-    const bearerHeader = req.headers['authorization'];
-    // Check if bearer is undefined
-    if (typeof bearerHeader !== 'undefined') {
-        // Split at the space
-        const bearer = bearerHeader.split(' ');
-        // Get token from array
-        const bearerToken = bearer[1];
-        // Set the token
-        req.token = bearerToken;
-        // Next middleware
-        next();
-    } else {
-        // Forbidden
-        res.sendStatus(200);
-    }
-}
+    socket.on('disconnect', async (kk) => {
+        if (socket.user_id) {
+            await require('./model/status').setstatus(2, socket.user_id);
+        }
+    })
+})
 
-
-
-app.listen(3001, (err, req) => { console.log("run in 3001") });
+Server.listen(process.env.SERVER_PORT)
