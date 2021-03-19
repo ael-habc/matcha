@@ -20,7 +20,7 @@ services:
         ports:
             - 8000:80
         environment:
-            MYSQL_USER: ernesto
-            MYSQL_PASSWORD: ernesto
+            MYSQL_USER: tibicha
+            MYSQL_PASSWORD: tibicha
 volumes:
     persistent:

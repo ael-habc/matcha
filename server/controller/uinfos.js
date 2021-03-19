@@ -27,7 +27,7 @@ let sendposition = async (userid) => {
 }
 
 exports.insertinfo = async (req, res) => {
-    let dt = await require('../model/position').getposition(req.jwt.user_id);
+    let data = await require('../model/position').getposition(req.jwt.user_id);
     if (!data.length)
         await sendposition(req.jwt.user_id);
     req.body.user_id = req.jwt.user_id;

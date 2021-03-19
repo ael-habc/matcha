@@ -47,9 +47,6 @@ exports.update_tags = async (req, res, next) => {
     next();
 }
 
-// exports.delete_tags = async (req, res, next) => {
-// }
-
 exports.get_tags = async (req, res, next) => {
     const {login} = req.query;
 
