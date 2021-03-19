@@ -82,6 +82,7 @@ async function generateValKey() {
 }
 
 exports.signup = async (req, res) => {
+    const {fname, lname, email} = req.body;
     result = await UsersModel.InsertUsers(req.body);
     var key = await generateValKey();
     res2 = await ConfModel.CreateConf({

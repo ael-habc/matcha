@@ -185,7 +185,7 @@ exports.updateAccount = async (req, res, next) => {
         return res.status(200).json({
             error : true,
             success : false,
-            message : 'You\'ve invalide symbols on login fields or is already used'
+            login : 'You\'ve invalide symbols on login fields or is already used'
         });
     if (req.body.email != undefined && req.body.email != ''
     && req.body.email != req.jwt.email && (emailisValide(req.body.email, null)
@@ -193,21 +193,21 @@ exports.updateAccount = async (req, res, next) => {
         return res.status(200).json({
             error : true,
             success : false,
-            message : 'email format is invalid or is already used'
+            login : 'email format is invalid or is already used'
         });
     if (req.body.first_name != undefined && req.body.first_name != ''
     && req.body.first_name != req.jwt.first_name && fnameisValide(req.body.first_name, null))
         return res.status(200).json({
             error : true,
             success : false,
-            message : 'firstname has invalid caractere'
+            login : 'firstname has invalid caractere'
         });
     if (req.body.last_name != undefined && req.body.last_name != ''
     && req.body.last_name != req.jwt.last_name && lnameisValide(req.body.last_name, null))
         return res.status(200).json({
             error : true,
             success : false,
-            message : 'lastname has invalid caractere'
+            login : 'lastname has invalid caractere'
         });
     next();
 }
