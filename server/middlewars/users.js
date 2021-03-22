@@ -31,7 +31,7 @@ function passwdisValide(passwd, status) {
 }
 
 function emailisValide(email, status) {
-   if (!/^([A-Za-z0-9\.]+\@[A-Za-z0-9]+\.[A-Za-z0-9]+)$/.test(email)) {
+   if (!/^([A-Za-z0-9\.\-\_]+\@[A-Za-z0-9]+\.[A-Za-z0-9]+)$/.test(email)) {
        if (status != null) {
            status.error = "email has invalid format";
         }
@@ -166,7 +166,6 @@ exports.signup = async (req, res, next) => {
         error : "",
         status : 200
     };
-
     DataValide = await checkData(Data, status);
     if (DataValide) {
         return res.status(status.status).json({
@@ -177,7 +176,6 @@ exports.signup = async (req, res, next) => {
     }
     next();
 }
-
 exports.updateAccount = async (req, res, next) => {
     if (req.body.login != undefined && req.body.login != ''
     && req.body.login != req.jwt.login && (loginisValide(req.body.login, null)
@@ -254,7 +252,7 @@ exports.changePasswd = async (req, res, next) => {
     const {passwd, rpasswd} = req.body;
 
     if (login == undefined || key == undefined
-        || passwd == undefined || rpasswd == undefined)
+       /* || passwd == undefined || rpasswd == undefined*/)
         return res.status(200).json({
             error : true,
             success : false,

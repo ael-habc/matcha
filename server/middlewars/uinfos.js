@@ -29,7 +29,7 @@ function    dataIset(body) {
 
 function    bdayISvalide(birthday) {
     if (!/^([0-9]{2}[\-]{1}[0-9]{2}[\-]{1}[0-9]{4})$/.test(birthday)
-    && !/^([0-9]{4}[\-]{1}[0-9]{2}[\-]{1}[0-9]{2})$/.test(birthday))
+    && !/^([0-9]{4}[\-]{1}[0-9]{2}[\-]{1}[0-9]{2})$/.test(birthday) )
         return (1);
     return (0);
 }
