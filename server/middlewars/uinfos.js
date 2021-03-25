@@ -1,4 +1,5 @@
 const infosModel = require('../model/uinfos');
+const dateFormat = require("dateformat");
 
 
 function gendreIsvalide(gendre) {
@@ -28,12 +29,32 @@ function    dataIset(body) {
 }
 
 function    bdayISvalide(birthday) {
+    let today = new Date()
+    let date = new Date(birthday)
+    let age = today.getFullYear() - date.getFullYear();
     if (!/^([0-9]{2}[\-]{1}[0-9]{2}[\-]{1}[0-9]{4})$/.test(birthday)
-    && !/^([0-9]{4}[\-]{1}[0-9]{2}[\-]{1}[0-9]{2})$/.test(birthday) )
+    && !/^([0-9]{4}[\-]{1}[0-9]{2}[\-]{1}[0-9]{2})$/.test(birthday) && age < 18)
         return (1);
     return (0);
 }
-
+/*const isBirthday = (date) => {
+    if(isEmpty(date)) return false
+    if(date.length !== 'YYYY-MM-DD'.length || date.split('-').length !== 3) return false
+    if(date && !/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/.test(date))
+        return false
+    let today = new Date();
+    let birthDate = new Date(date);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    let m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+    if(age < 18)
+        return false
+    if(age > 120)
+        return false
+    return true
+}*/
 function    sexprefIsvalide(sexpref) {
     if (sexpref > 0 && sexpref <= 3)
         return (0);

@@ -16,7 +16,8 @@ function checkifexist(tags) {
 }
 
 exports.insert_tags = async (req, res, next) => {
-    if (req.body.tags == undefined)
+    let tag = req.body.tags;
+    if (tag == undefined || tag == " ")
         return res.status(200).json({
             error : true,
             success : false,

@@ -16,12 +16,21 @@ const subject = {
 
 const text = {
     signup : 'Hello <fname> <lname>, Click on this link bellow to complete your registration : <br><a href="http://'
-    + process.env.FRONT_HOST + ':' + process.env.FRONT_PORT + '/confirm/<login>/<key>">CLICK-HERE</a>',
+    + process.env.FRONT_HOST + ':' + process.env.FRONT_PORT + '/singin?login=<login>&key=<key>">CLICK-HERE</a>',
     changeEmail : 'Hello <fname> <lname>, Click on this link bellow to validate your new email : <br><a href="http://'
     + process.env.FRONT_HOST + ':' + process.env.FRONT_PORT + '/singin?login=<login>&key=<key>">CLICK-HERE</a>',
     resetPasswd : 'Hello <fname> <lname>, Click on this link bellow to choose inother password : <br><a href="http://'
-    + process.env.FRONT_HOST + ':' + process.env.FRONT_PORT + '/reset/<login>/<key>">CLICK-HERE</a>'
+    + process.env.FRONT_HOST + ':' + process.env.FRONT_PORT + '/newPassword?login=<login>&key=<key>">CLICK-HERE</a>'
 }
+
+// const text = {
+//     signup : 'Hello <fname> <lname>, Click on this link bellow to complete your registration : <br><a href="http://'
+//     + process.env.FRONT_HOST + ':' + process.env.FRONT_PORT + '/confirm/<login>/<key>">CLICK-HERE</a>',
+//     changeEmail : 'Hello <fname> <lname>, Click on this link bellow to validate your new email : <br><a href="http://'
+//     + process.env.FRONT_HOST + ':' + process.env.FRONT_PORT + '/singin?login=<login>&key=<key>">CLICK-HERE</a>',
+//     resetPasswd : 'Hello <fname> <lname>, Click on this link bellow to choose inother password : <br><a href="http://'
+//     + process.env.FRONT_HOST + ':' + process.env.FRONT_PORT + '/reset/<login>/<key>">CLICK-HERE</a>'
+// }
 
 exports.RegistrationEmail = (infos, key) => {
     var msg = text.signup;

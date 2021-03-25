@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "devStart": "" 
   },
   "author": "oboualla",
   "license": "ISC",
@@ -15,6 +16,7 @@
     "buffer": "^6.0.3",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
+    "dateformat": "^4.5.1",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-fileupload": "^1.2.1",
